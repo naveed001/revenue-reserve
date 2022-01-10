@@ -81,8 +81,7 @@ const Signup = () => {
                     <h1 className="text-center"> Login </h1>
                     {error && <Alert variant="danger">{error}</Alert>}
                     <Button className="btn-primary w-100 mt-4" onClick={signInWithGoogle}> Login with Google</Button>
-                    <Button className="btn-primary w-100 mt-4" onClick={signInWithFacebook}> Login with
-                        Facebook</Button>
+                    <Button className="btn-primary w-100 mt-4" onClick={signInWithFacebook}> Login with Facebook</Button>
                 </Card.Body>
             </Card>
         </div>

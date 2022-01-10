@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext} from "react";
-import {db} from '../firebaseConfig';
+import {analytics, db} from '../firebaseConfig';
 import {collection, getDocs} from 'firebase/firestore/lite';
 import {useNavigate, Link, useParams} from 'react-router-dom';
 import {getAuth, signOut} from "firebase/auth";
@@ -14,7 +14,8 @@ import {
     Legend,
 } from 'chart.js';
 import {Bar} from 'react-chartjs-2';
-import {Button, Card} from "react-bootstrap";
+import {Button, Card, Spinner} from "react-bootstrap";
+import {logEvent} from "firebase/analytics";
 
 
 export default function HomeScreen() {
@@ -37,6 +38,18 @@ export default function HomeScreen() {
     useEffect(() => {
         fetchData();
     }, [isInitialRender]);
+
+    useEffect(() => {
+        if (id) {
+            logEvent(analytics, "LookUps", {
+                user_id: currentUser.uid,
+                username: currentUser.displayName,
+                email: currentUser.email,
+                company: id,
+                time: (new Date).getTime()
+            });
+        }
+    }, [id]);
 
     const fetchData = () => {
         const dataCollection = collection(db, "revenues");
@@ -153,8 +166,8 @@ export default function HomeScreen() {
         <div>
             <Card>
                 <Card.Body>
-                    {!companiesData[id] && !loading && <h1> Companies List</h1>}
-                    <div className="header">
+                    {/*{!companiesData[id] && !loading && <h1> Companies List</h1>}*/}
+                    <div>
                         <Button onClick={goToHome} style={{position: 'fixed', top: '10px', left: '10px'}}>
                             Home
                         </Button>
@@ -171,23 +184,29 @@ export default function HomeScreen() {
                                 Logout
                             </Button>
                         </div>
-
                     </div>
-                    <div style={{display: 'inline-block', width: '800px'}}>
-                        {
-                            companiesData[id] ?
-                                <>
-                                    <h1>{`${id} Revenue Stats`}</h1>
-                                    {fetchCompanyData()}
-                                </>
-                                :
-                                companiesList.map(company => {
-                                    return (<li>
-                                        <Link to={`/companies/${company}`}>{company}</Link>
-                                    </li>)
-                                })
-                        }
-                    </div>
+                    {!loading ? <div style={{display: 'inline-block', width: '800px'}}>
+                            {
+                                companiesData[id] ?
+                                    <>
+                                        <h1>{`${id} Revenue Stats`}</h1>
+                                        {fetchCompanyData()}
+                                    </>
+                                    :
+                                    <>
+                                        <h1> Companies List</h1>
+                                        {
+                                            companiesList.map(company => {
+                                                return (<li>
+                                                    <Link to={`/companies/${company}`}>{company}</Link>
+                                                </li>)
+                                            })
+                                        }
+                                    </>
+                            }
+                        </div> :
+                        <Spinner animation="border" role="status"/>
+                    }
                 </Card.Body>
             </Card>
         </div>
