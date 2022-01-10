@@ -37,7 +37,7 @@ const Signup = () => {
             if (error.code === 'auth/account-exists-with-different-credential') {
                 setError("You have already signed up with facebook with same credentials, login with facebook");
             } else {
-                setError(error.code);
+                setError("try again");
             }
         });
     }
@@ -69,7 +69,7 @@ const Signup = () => {
             if (error.code === 'auth/account-exists-with-different-credential') {
                 setError("You have already signed up with google with same credentials, login with google");
             } else {
-                setError(error.code);
+                setError("try again");
             }
         });
     }
